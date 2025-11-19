@@ -1,0 +1,31 @@
+# WordPress core config and secrets
+wp-config.php
+wp-config-*.php
+
+# WordPress generated content
+wp-content/uploads/
+wp-content/cache/
+wp-content/backups/
+wp-content/upgrade/
+wp-content/advanced-cache.php
+wp-content/wp-cache-config.php
+wp-content/debug.log
+
+# OS cruft
+.DS_Store
+Thumbs.db
+
+# IDE/editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Dependency/build artifacts
+node_modules/
+vendor/
+*.log
+*.sql
+*.sqlite
+.env
+.env.*
