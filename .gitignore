@@ -29,3 +29,28 @@ vendor/
 *.sqlite
 .env
 .env.*
+
+# Archives, dumps, and temporary installers
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.gz
+*.rar
+*.7z
+*.bak
+*.tmp
+*.temp
+*-backup.*
+*.sql.gz
+*.sql.zip
+*.img
+*.iso
+*.md5
+
+# Lock files created by package managers and tooling
+*.lock
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+composer.lock
