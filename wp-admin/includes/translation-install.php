@@ -204,10 +204,29 @@ function wp_install_language_form( $languages ) {
 	global $wp_local_package;
 
 	$installed_languages = get_available_languages();
+	$preferred_locale    = 'zh_CN';
+	$preferred_language  = null;
+	if ( isset( $languages[ $preferred_locale ] ) ) {
+		$preferred_language = $languages[ $preferred_locale ];
+		unset( $languages[ $preferred_locale ] );
+	}
 
 	echo "<label class='screen-reader-text' for='language'>Select a default language</label>\n";
 	echo "<select size='14' name='language' id='language'>\n";
-	echo '<option value="" lang="en" selected="selected" data-continue="Continue" data-installed="1">English (United States)</option>';
+	if ( $preferred_language ) {
+		printf(
+			'<option value="%s" lang="%s" data-continue="%s" selected="selected"%s>%s</option>' . "\n",
+			esc_attr( $preferred_language['language'] ),
+			esc_attr( current( $preferred_language['iso'] ) ),
+			esc_attr( $preferred_language['strings']['continue'] ? $preferred_language['strings']['continue'] : 'Continue' ),
+			in_array( $preferred_language['language'], $installed_languages, true ) ? ' data-installed="1"' : '',
+			esc_html( $preferred_language['native_name'] )
+		);
+		$default_selected_attr = '';
+	} else {
+		$default_selected_attr = ' selected="selected"';
+	}
+	echo '<option value="" lang="en"' . $default_selected_attr . ' data-continue="Continue" data-installed="1">English (United States)</option>';
 	echo "\n";
 
 	if ( ! empty( $wp_local_package ) && isset( $languages[ $wp_local_package ] ) ) {

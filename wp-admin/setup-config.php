@@ -126,11 +126,19 @@ if ( ! empty( $_REQUEST['language'] ) ) {
 } elseif ( isset( $GLOBALS['wp_local_package'] ) ) {
 	$language = $GLOBALS['wp_local_package'];
 }
+if ( empty( $language ) && $step > -1 ) {
+	$language = 'zh_CN';
+}
 
 switch ( $step ) {
 	case -1:
 		if ( wp_can_install_language_pack() && empty( $language ) ) {
 			$languages = wp_get_available_translations();
+			if ( isset( $languages['zh_CN'] ) ) {
+				$preferred = array( 'zh_CN' => $languages['zh_CN'] );
+				unset( $languages['zh_CN'] );
+				$languages = $preferred + $languages;
+			}
 			if ( $languages ) {
 				setup_config_display_header( 'language-chooser' );
 				echo '<h1 class="screen-reader-text">Select a default language</h1>';
