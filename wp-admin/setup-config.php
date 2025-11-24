@@ -121,8 +121,13 @@ function setup_config_display_header( $body_classes = array() ) {
  * @global WP_Locale $wp_locale        WordPress date and time locale object.
  */
 $language = '';
-if ( ! empty( $_REQUEST['language'] ) ) {
-	$language = preg_replace( '/[^a-zA-Z0-9_]/', '', $_REQUEST['language'] );
+$language_param_present = array_key_exists( 'language', $_REQUEST );
+if ( $language_param_present ) {
+	$raw_language = (string) $_REQUEST['language'];
+	$language     = preg_replace( '/[^a-zA-Z0-9_]/', '', $raw_language );
+	if ( '' === $language && '' === trim( $raw_language ) ) {
+		$language = 'en_US';
+	}
 } elseif ( isset( $GLOBALS['wp_local_package'] ) ) {
 	$language = $GLOBALS['wp_local_package'];
 }
@@ -152,11 +157,15 @@ switch ( $step ) {
 		// Deliberately fall through if we can't reach the translations API.
 
 	case 0:
+		$effective_language = '';
 		if ( ! empty( $language ) ) {
 			$loaded_language = wp_download_language_pack( $language );
 			if ( $loaded_language ) {
 				load_default_textdomain( $loaded_language );
 				$GLOBALS['wp_locale'] = new WP_Locale();
+				$effective_language = $loaded_language;
+			} else {
+				$effective_language = $language;
 			}
 		}
 
@@ -165,8 +174,8 @@ switch ( $step ) {
 		if ( isset( $_REQUEST['noapi'] ) ) {
 			$step_1 .= '&amp;noapi';
 		}
-		if ( ! empty( $loaded_language ) ) {
-			$step_1 .= '&amp;language=' . $loaded_language;
+		if ( ! empty( $effective_language ) ) {
+			$step_1 .= '&amp;language=' . $effective_language;
 		}
 		?>
 <h1 class="screen-reader-text">
