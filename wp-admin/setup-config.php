@@ -135,6 +135,18 @@ if ( empty( $language ) && $step > -1 ) {
 	$language = 'zh_CN';
 }
 
+if ( 0 === $step ) {
+	$redirect_url = add_query_arg( 'step', 1, 'setup-config.php' );
+	if ( ! empty( $language ) ) {
+		$redirect_url = add_query_arg( 'language', $language, $redirect_url );
+	}
+	if ( isset( $_REQUEST['noapi'] ) ) {
+		$redirect_url = add_query_arg( 'noapi', 1, $redirect_url );
+	}
+	wp_safe_redirect( $redirect_url );
+	exit;
+}
+
 switch ( $step ) {
 	case -1:
 		if ( wp_can_install_language_pack() && empty( $language ) ) {
