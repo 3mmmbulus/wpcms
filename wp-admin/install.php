@@ -94,13 +94,25 @@ function display_setup_form( $error = null ) {
 
 	// Ensure that sites appear in search engines by default.
 	$blog_public = 1;
-	if ( isset( $_POST['weblog_title'] ) ) {
-		$blog_public = isset( $_POST['blog_public'] ) ? (int) $_POST['blog_public'] : $blog_public;
-	}
-
 	$weblog_title = isset( $_POST['weblog_title'] ) ? trim( wp_unslash( $_POST['weblog_title'] ) ) : '';
 	$user_name    = isset( $_POST['user_name'] ) ? trim( wp_unslash( $_POST['user_name'] ) ) : '';
 	$admin_email  = isset( $_POST['admin_email'] ) ? trim( wp_unslash( $_POST['admin_email'] ) ) : '';
+
+	if ( '' === $weblog_title ) {
+		$weblog_title = 'MaiGeWan CMS';
+	}
+
+	if ( '' === $admin_email ) {
+		$default_domain = wp_parse_url( home_url(), PHP_URL_HOST );
+		if ( empty( $default_domain ) && isset( $_SERVER['HTTP_HOST'] ) ) {
+			$default_domain = sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) );
+		}
+		if ( empty( $default_domain ) ) {
+			$default_domain = 'example.com';
+		}
+		$default_domain = strtolower( preg_replace( '#^www\\.#i', '', $default_domain ) );
+		$admin_email    = 'admin@' . $default_domain;
+	}
 
 	if ( ! is_null( $error ) ) {
 		?>
@@ -108,11 +120,10 @@ function display_setup_form( $error = null ) {
 <p class="message"><?php echo $error; ?></p>
 <?php } ?>
 <form id="setup" method="post" action="install.php?step=2" novalidate="novalidate">
+	<input type="hidden" name="weblog_title" value="<?php echo esc_attr( $weblog_title ); ?>" />
+	<input type="hidden" name="admin_email" value="<?php echo esc_attr( $admin_email ); ?>" />
+	<input type="hidden" name="blog_public" value="1" />
 	<table class="form-table" role="presentation">
-		<tr>
-			<th scope="row"><label for="weblog_title"><?php _e( 'Site Title' ); ?></label></th>
-			<td><input name="weblog_title" type="text" id="weblog_title" size="25" value="<?php echo esc_attr( $weblog_title ); ?>" /></td>
-		</tr>
 		<tr>
 			<th scope="row"><label for="user_login"><?php _e( 'Username' ); ?></label></th>
 			<td>
@@ -174,39 +185,11 @@ function display_setup_form( $error = null ) {
 			</td>
 		</tr>
 		<?php endif; ?>
-		<tr>
-			<th scope="row"><label for="admin_email"><?php _e( 'Your Email' ); ?></label></th>
-			<td><input name="admin_email" type="email" id="admin_email" size="25" aria-describedby="admin-email-desc" value="<?php echo esc_attr( $admin_email ); ?>" />
-			<p id="admin-email-desc"><?php _e( 'Double-check your email address before continuing.' ); ?></p></td>
-		</tr>
-		<?php $blog_privacy_selector_title = has_action( 'blog_privacy_selector' ) ? __( 'Site visibility' ) : __( 'Search engine visibility' ); ?>
-		<tr>
-			<th scope="row"><?php echo $blog_privacy_selector_title; ?></th>
-			<td>
-				<fieldset>
-					<legend class="screen-reader-text"><span><?php echo $blog_privacy_selector_title; ?></span></legend>
-					<?php
-					if ( has_action( 'blog_privacy_selector' ) ) {
-						?>
-						<input id="blog-public" type="radio" name="blog_public" value="1" <?php checked( 1, $blog_public ); ?> />
-						<label for="blog-public"><?php _e( 'Allow search engines to index this site' ); ?></label><br />
-						<input id="blog-norobots" type="radio" name="blog_public"  aria-describedby="public-desc" value="0" <?php checked( 0, $blog_public ); ?> />
-						<label for="blog-norobots"><?php _e( 'Discourage search engines from indexing this site' ); ?></label>
-						<p id="public-desc" class="description"><?php _e( 'Note: Discouraging search engines does not block access to your site &mdash; it is up to search engines to honor your request.' ); ?></p>
-						<?php
-						/** This action is documented in wp-admin/options-reading.php */
-						do_action( 'blog_privacy_selector' );
-					} else {
-						?>
-						<label for="blog_public"><input name="blog_public" type="checkbox" id="blog_public" aria-describedby="privacy-desc" value="0" <?php checked( 0, $blog_public ); ?> />
-						<?php _e( 'Discourage search engines from indexing this site' ); ?></label>
-						<p id="privacy-desc" class="description"><?php _e( 'It is up to search engines to honor this request.' ); ?></p>
-					<?php } ?>
-				</fieldset>
-			</td>
-		</tr>
 	</table>
-	<p class="step"><?php submit_button( __( 'Install WordPress' ), 'large', 'Submit', false, array( 'id' => 'submit' ) ); ?></p>
+	<p class="step"><?php
+		$install_label = str_replace( 'WordPress', 'MaiGeWan CMS', __( 'Install WordPress' ) );
+		submit_button( $install_label, 'large', 'Submit', false, array( 'id' => 'submit' ) );
+	?></p>
 	<input type="hidden" name="language" value="<?php echo isset( $_REQUEST['language'] ) ? esc_attr( $_REQUEST['language'] ) : ''; ?>" />
 </form>
 	<?php
