@@ -69,11 +69,11 @@ function display_header( $body_classes = '' ) {
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta name="robots" content="noindex,nofollow" />
-	<title><?php _e( 'WordPress &rsaquo; Installation' ); ?></title>
+	<title><?php _e( 'MaiGeWan CMS &rsaquo; Installation' ); ?></title>
 	<?php wp_admin_css( 'install', true ); ?>
 </head>
 <body class="wp-core-ui<?php echo $body_classes; ?>">
-<p id="logo"><?php _e( 'WordPress' ); ?></p>
+<p id="logo"><?php _e( 'MaiGeWan CMS' ); ?></p>
 
 	<?php
 } // End display_header().

@@ -136,9 +136,21 @@ if ( empty( $language ) && $step > -1 ) {
 }
 
 if ( 0 === $step ) {
-	$redirect_url = add_query_arg( 'step', 1, 'setup-config.php' );
+	$effective_language = '';
 	if ( ! empty( $language ) ) {
-		$redirect_url = add_query_arg( 'language', $language, $redirect_url );
+		$loaded_language = wp_download_language_pack( $language );
+		if ( $loaded_language ) {
+			load_default_textdomain( $loaded_language );
+			$GLOBALS['wp_locale'] = new WP_Locale();
+			$effective_language  = $loaded_language;
+		} else {
+			$effective_language = $language;
+		}
+	}
+
+	$redirect_url = add_query_arg( 'step', 1, 'setup-config.php' );
+	if ( ! empty( $effective_language ) ) {
+		$redirect_url = add_query_arg( 'language', $effective_language, $redirect_url );
 	}
 	if ( isset( $_REQUEST['noapi'] ) ) {
 		$redirect_url = add_query_arg( 'noapi', 1, $redirect_url );
@@ -289,7 +301,7 @@ switch ( $step ) {
 		</tr>
 		<tr>
 			<th scope="row"><label for="prefix"><?php _e( 'Table Prefix' ); ?></label></th>
-			<td><input name="prefix" id="prefix" type="text" aria-describedby="prefix-desc" value="wp_" size="25" />
+			<td><input name="prefix" id="prefix" type="text" aria-describedby="prefix-desc" value="mgw_" size="25" />
 			<p id="prefix-desc"><?php _e( 'If you want to run multiple WordPress installations in a single database, change this.' ); ?></p></td>
 		</tr>
 	</table>
